@@ -14,6 +14,7 @@ import ru.gb.mark.webstore.service.CartService;
 import ru.gb.mark.webstore.service.CategoryService;
 import ru.gb.mark.webstore.service.ProductService;
 
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 

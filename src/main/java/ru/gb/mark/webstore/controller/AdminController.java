@@ -15,6 +15,7 @@ import ru.gb.mark.webstore.service.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -104,9 +105,9 @@ public class AdminController {
 
     @GetMapping("/products/update/{id}")
     public String updateProduct(Model model, @PathVariable(name = "id") Long id) {
-        Product product = productService.findProductById(id);
+        Optional<Product> product = productService.findProductById(id);
         model.addAttribute("prod", product);
-        productService.saveProduct(product);
+        productService.saveProduct(product.orElseThrow());
         return "update";
     }
 

@@ -16,6 +16,7 @@ import ru.gb.mark.webstore.repository.ProductRepository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -94,8 +95,12 @@ public class ProductService {
         return this.products.isEmpty();
     }
 
-    public Product findProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+    public Optional<Product> findProductById(Long id) {
+        return productRepository.findById(id);
+    }
+
+    public List<Product> getProducts(){
+        return productRepository.findAll();
     }
 
     @Transactional

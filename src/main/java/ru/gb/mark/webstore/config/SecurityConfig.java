@@ -1,6 +1,5 @@
 package ru.gb.mark.webstore.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -11,12 +10,12 @@ import org.springframework.stereotype.Component;
 
 @EnableWebSecurity
 @Component
-@RequiredArgsConstructor
 public class SecurityConfig {
 
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
+
         http
                 .authorizeHttpRequests()
                 .requestMatchers("/user/**").hasRole("USER")
