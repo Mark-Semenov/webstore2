@@ -64,7 +64,7 @@ public class UserService implements UserDetailsService {
     }
 
 
-    //Used builder
+    //Builder used
     public String registerNewUserAccount(UserDTO user) {
 
         User u = UserWrapper.builder()

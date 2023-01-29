@@ -1,7 +1,6 @@
 package ru.gb.mark.webstore.config;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,17 +14,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-//    private final UserService userService;
-
 
     @Bean
     protected SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
-//                .userDetailsService(userService)
-
-//                .requestMatchers(PathRequest.toStaticResources().atCommonLocations())
-//                .permitAll()
-//                .and()
                 .authorizeHttpRequests()
                 .requestMatchers("/user/**").hasRole("USER")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
