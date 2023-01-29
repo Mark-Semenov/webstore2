@@ -31,8 +31,13 @@ log/
 *.md
 .gradle/
 .gitignore
-README.md
 gradlew
 src/main/resources/static/images/
-HELP.md
 settings.gradle
+/src/main/resources/gradle.properties
+.DS_store
+
+ServiceRegistry/
+product/
+auth-service/
+/src/main/resources/app.properties

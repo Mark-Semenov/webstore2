@@ -28,7 +28,7 @@ public class ProductController {
         List<Product> productsList = null;
 
         if (productId != null) {
-            productsList = List.of(productService.findProductById(productId));
+            productsList = List.of(productService.findProductById(productId).orElseThrow());
         }
 
         if (search != null && !search.equals("")) {
@@ -38,7 +38,7 @@ public class ProductController {
                 model.addAttribute("notFound", "Sorry, product " + search + " not found. Please, try again.");
             } else if (productsList.size() == 1) {
                 productId = productsList.get(0).getId();
-                productsList = List.of(productService.findProductById(productId));
+                productsList = List.of(productService.findProductById(productId).orElseThrow());
             }
         }
 

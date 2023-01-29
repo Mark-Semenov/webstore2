@@ -38,7 +38,7 @@ public class UserSessionCart {
         Product product;
         if (getProductInsideCart(prodId) == null) {
             count = 0;
-            product = productService.findProductById(prodId);
+            product = productService.findProductById(prodId).orElseThrow();
         } else {
             product = getProductInsideCart(prodId);
             count = productCart.get(product);
@@ -106,13 +106,12 @@ public class UserSessionCart {
 
     }
 
-    public Integer calculateTotalDiscount() {
+    public void calculateTotalDiscount() {
         discount = 0;
         for (Product p : productCart.keySet()) {
             prodDiscount = calculateProductDiscount(p);
             discount += (prodDiscount * productCart.get(p));
         }
-        return discount;
     }
 
     public void calculateTotalSum() {
