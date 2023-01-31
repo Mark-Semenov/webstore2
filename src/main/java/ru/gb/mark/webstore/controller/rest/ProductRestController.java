@@ -1,5 +1,6 @@
 package ru.gb.mark.webstore.controller.rest;
 
+import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -8,16 +9,11 @@ import ru.gb.mark.webstore.service.ProductService;
 
 import java.util.Optional;
 
+@Data
 @RestController(value = "/api/v1")
 public class ProductRestController {
 
     private final ProductService productService;
-
-
-    public ProductRestController(ProductService productService) {
-        this.productService = productService;
-    }
-
 
     @GetMapping("/prod")
     public ResponseEntity<?> getProduct(@RequestParam(name = "id") Long id) {
@@ -26,7 +22,7 @@ public class ProductRestController {
 
     @GetMapping("/products")
     public ResponseEntity<?> products() {
-        return ResponseEntity.of(Optional.ofNullable(productService.getProducts()));
+        return ResponseEntity.of(Optional.ofNullable(productService.getAllProducts()));
     }
 
 

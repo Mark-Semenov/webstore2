@@ -1,34 +1,35 @@
 package ru.gb.mark.webstore.service;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import ru.gb.mark.webstore.entity.Order;
-import ru.gb.mark.webstore.repository.CartRepository;
+import ru.gb.mark.webstore.entity.OrderStatus;
+import ru.gb.mark.webstore.entity.Product;
 import ru.gb.mark.webstore.repository.OrderRepository;
-import ru.gb.mark.webstore.session.UserSessionCart;
+import ru.gb.mark.webstore.service.cart.UserCart;
 
-import java.math.BigDecimal;
+import java.util.List;
 
 @Log4j2
-@Data
 @Component
 public class CartService {
 
-    private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
-    private final UserSessionCart userSessionCart;
-    private final ProductService productService;
+    private final UserCart userCart;
 
+
+    public CartService(OrderRepository orderRepository, UserCart userCart) {
+        this.orderRepository = orderRepository;
+        this.userCart = userCart;
+    }
 
     public void buyProducts(Order order) {
-        order.setTotalSum(userSessionCart.getTotalSum());
+        order.setStatus(OrderStatus.NEW);
+        order.setTotalSum(userCart.getTotalSum());
         saveOrder(order);
-        userSessionCart.getProductCart().clear();
-        userSessionCart.setTotalSum(BigDecimal.valueOf(0));
-        userSessionCart.setDiscount(0);
+        userCart.clearCart();
     }
 
     public void saveOrder(Order order) {
@@ -36,20 +37,36 @@ public class CartService {
     }
 
     public void addToCart(@NonNull Long prodId) {
-        userSessionCart.addToCart(prodId);
+        Product p = userCart.getById(prodId);
+        userCart.addToCart(p);
     }
 
     public void deleteProduct(@NotNull Long prodId) {
-        userSessionCart.removeProdCompletely(prodId);
+        userCart.removeProduct(userCart.getById(prodId));
     }
 
     public void removeOne(Long prodId) {
-        userSessionCart.removeOneProd(prodId);
+        userCart.decreaseProduct(userCart.getById(prodId));
     }
 
     public Integer getProductsCount() {
-        return userSessionCart.getProductsCount();
+        return userCart.getTotalCount();
+    }
+
+    public Float getTotalSum() {
+        return userCart.getTotalSum().floatValue();
+    }
+
+    public Float getTotalDiscount() {
+        return userCart.getTotalDiscount().floatValue();
+    }
+
+    public List<Product> getProducts() {
+        return userCart.getProductCart().keySet().stream().toList();
     }
 
 
+    public Integer getOneProdCount(Product product) {
+        return userCart.getProductCount(product);
+    }
 }

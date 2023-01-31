@@ -51,8 +51,7 @@ public class ProductController {
     @GetMapping("/add")
     public String addProductToCart(@RequestParam(name = "id") Long prodId) {
         cartService.addToCart(prodId);
-        return "redirect:/product?id=" + prodId;
-
+        return String.format("redirect:/product?id=%d", prodId);
     }
 
 
