@@ -10,15 +10,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import ru.gb.mark.webstore.dto.UserDTO;
-import ru.gb.mark.webstore.entity.*;
+import ru.gb.mark.webstore.entity.Cart;
+import ru.gb.mark.webstore.entity.User;
+import ru.gb.mark.webstore.entity.UserWrapper;
 import ru.gb.mark.webstore.repository.CartRepository;
-import ru.gb.mark.webstore.repository.ProductInCartRepository;
 import ru.gb.mark.webstore.repository.RoleRepository;
 import ru.gb.mark.webstore.repository.UserRepository;
-import ru.gb.mark.webstore.session.UserSessionCart;
+import ru.gb.mark.webstore.service.cart.UserCart;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 @Log4j2
@@ -26,37 +25,34 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService implements UserDetailsService {
 
+    private final UserCart userCart;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final CartRepository cartRepository;
-    private final UserSessionCart userSessionCart;
-    private final ProductInCartRepository productInCartRepository;
     private final BCryptPasswordEncoder encoder;
+
 
     @Transactional
     public UserDetails loadUserByUsername(@NonNull String email) throws UsernameNotFoundException {
 
         Optional<User> user = userRepository.findByEmail(email);
+
         if (user.isPresent()) {
             if (user.get().getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_USER"))) {
+
                 Cart cart = user.get().getCart();
-                if (cart.getProducts() != null) {
-                    for (ProductInCart p : cart.getProducts()) {
-                        if (userSessionCart.getProductCart().keySet().stream().anyMatch(product -> product.equals(p.getProduct()))) {
-                            userSessionCart.getProductCart().replace(p.getProduct(), p.getCount() + userSessionCart.getProductCart().get(p.getProduct()));
-                        } else {
-                            userSessionCart.getProductCart().put(p.getProduct(), p.getCount());
-                        }
-                    }
-                    userSessionCart.calculateTotalDiscount();
-                    userSessionCart.calculateTotalSum();
+
+                if (!cart.getProducts().isEmpty()) {
+                    userCart.loadSavedProducts(cart.getProducts());
                 }
             }
 
         }
 
-        return user.map(value -> new org.springframework.security.core.userdetails.User(value.getEmail(),
-                value.getPassword(), value.getRoles())).orElse(null);
+        return user.map(usr -> new org.springframework.security.core.userdetails.User(
+                usr.getEmail(),
+                usr.getPassword(),
+                usr.getRoles())).orElseThrow();
     }
 
     public Optional<User> findUserByEmail(String email) {
@@ -82,32 +78,13 @@ public class UserService implements UserDetailsService {
         userRepository.save(u);
         cartRepository.save(u.getCart());
         saveUserCartWithProducts(u.getCart());
-        userSessionCart.getProductCart().clear();
+        userCart.clearCart();
 
         return "redirect:/login";
 
     }
 
     public void saveUserCartWithProducts(Cart cart) {
-        ProductInCart product;
-        List<ProductInCart> listOfProductInCart = new ArrayList<>();
-        if (!userSessionCart.getProductCart().isEmpty()) {
-            for (Product p : userSessionCart.getProductCart().keySet()) {
-                product = new ProductInCart();
-                product.setProduct(p);
-                product.setCount(userSessionCart.getProductCart().get(p));
-                productInCartRepository.save(product);
-                listOfProductInCart.add(product);
-            }
-            cart.setProducts(listOfProductInCart);
-        } else cart.setProducts(null);
-
-        cartRepository.save(cart);
+        userCart.saveCart(cart);
     }
-
-
-
-
-
-
 }

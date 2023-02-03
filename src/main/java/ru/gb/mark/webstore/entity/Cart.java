@@ -15,7 +15,7 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany (fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY)
     @ToString.Exclude
     @JoinTable(
             name = "carts_products",

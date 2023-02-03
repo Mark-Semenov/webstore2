@@ -21,7 +21,7 @@
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li th:each="category : ${@categoryService.getCategories()}">
-                                    <a class="dropdown-item" name="category" type="request"
+                                    <a class="dropdown-item" type="request"
                                        th:href="@{'/categories/' + ${category.name}}"
                                        th:text="${category.name}"/>
                                 </li>
@@ -43,7 +43,7 @@
                         <a th:href="@{'/cart'}">
                             <img th:src="@{/images/cart.png}" class="cart-png">
                         </a>
-                        <div th:unless="${@cartService.getUserSessionCart().productCart.isEmpty()}">
+                        <div th:unless="${@cartService.getProducts().isEmpty()}">
                             <img th:src="@{/images/cart_point.png}" class="cart-point-img">
                             <p th:text="${@cartService.getProductsCount()}"
                                class="cart_prod_count"/>

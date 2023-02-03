@@ -18,48 +18,49 @@
     <div class="top container">
 
         <div class="cart-heading">
-            <h3 th:if="${!cart.productCart.isEmpty()}">Cart</h3>
-            <h3 th:if="${cart.productCart.isEmpty()}">Cart is empty</h3>
+            <h3 th:if="${!cart.isEmpty()}">Cart</h3>
+            <h3 th:if="${cart.isEmpty()}">Cart is empty</h3>
         </div>
 
         <div class="cart-body">
             <div class="cart-left-side">
-                <div class="card" th:each="product : ${prodInCart}">
+                <div class="card" th:each="product : ${cart}">
                     <div class="card-header">
-                        <h6 th:text="${product.getName}"/>
+                        <h6 th:text="${product.getName()}"/>
                     </div>
                     <div class="card-body cart">
                         <div class="prod-img">
-                            <img th:src="@{'/images/'+ ${product.image}}" class="card-img-top cart-prod-image"
-                                 th:alt="${product.getName}">
+                            <img th:src="@{'/images/'+ ${product.getImage()}}" class="card-img-top cart-prod-image"
+                                 th:alt="${product.getName()}">
                         </div>
                         <div class="product-description">
-                            <p class="card-text" th:text="${product.description}"/>
+                            <p class="card-text" th:text="${product.getDescription()}"/>
                         </div>
                         <div>
-                            <p th:text="${product.price} + ' $'"/>
-                            <p th:if="${product.oldPrice != null}" th:text="${product.oldPrice} + ' $'"
+                            <p th:text="${product.getPrice()} + ' $'"/>
+                            <p th:if="${product.getOldPrice() != null}" th:text="${product.getOldPrice()} + ' $'"
                                style="text-decoration: line-through"/>
+                            <p th:text="${@baseUserCart.getProductDiscount(product)}"/>
                         </div>
                         <div class="product-count">
-                            <a class="count-plus-minus" th:href="@{'/cart/remove?id=' + ${product.id}}">-</a>
+                            <a class="count-plus-minus" th:href="@{'/cart/remove?id=' + ${product.getId()}}">-</a>
                             <input class="input-group input-prod-count" type="text"
-                                   th:placeholder="${prodAndCount.get(product).intValue()}">
-                            <a class="count-plus-minus" th:href="@{'/cart/add?id=' + ${product.id}}">+</a>
+                                   th:placeholder="${@cartService.getOneProdCount(product)}">
+                            <a class="count-plus-minus" th:href="@{'/cart/add?id=' + ${product.getId()}}">+</a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <a class="card-link" th:href="@{'/product?id=' + ${product.id}}" th:text="'More'"/>
-                        <a class="card-link" th:href="@{'/cart/delete?id=' + ${product.id}}" th:text="'Delete'"/>
+                        <a class="card-link" th:href="@{'/product?id=' + ${product.getId()}}" th:text="'More'"/>
+                        <a class="card-link" th:href="@{'/cart/delete?id=' + ${product.getId()}}" th:text="'Delete'"/>
                     </div>
                 </div>
             </div>
 
-            <div th:if="${!cart.productCart.isEmpty()}" class="cart-right-side">
+            <div th:if="${!cart.isEmpty()}" class="cart-right-side">
                 <div>
                     <h3>Cart</h3>
-                    <p th:text="'Count of goods: ' + ${countOfProducts}"/>
-                    <p th:text="'Discount: ' + ${discount} + ' $'"/>
+                    <p th:text="'Count of goods: ' + ${totalCount}"/>
+                    <p th:text="'Discount: ' + ${totalDiscount} + ' $'"/>
                 </div>
                 <div>
                     <h3>Total sum</h3>

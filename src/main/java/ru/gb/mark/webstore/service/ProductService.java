@@ -9,8 +9,6 @@ import ru.gb.mark.webstore.entity.AdminPanelBlock;
 import ru.gb.mark.webstore.entity.Category;
 import ru.gb.mark.webstore.entity.Product;
 import ru.gb.mark.webstore.repository.AdminPanelBlockRepository;
-import ru.gb.mark.webstore.repository.AdminURLRepository;
-import ru.gb.mark.webstore.repository.BrandRepository;
 import ru.gb.mark.webstore.repository.ProductRepository;
 
 import java.math.BigDecimal;
@@ -27,9 +25,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private Page<Product> products;
     private Pageable pageable;
-    private final AdminURLRepository adminURLRepository;
     private final AdminPanelBlockRepository adminPanelBlockRepository;
-    private final BrandRepository brandRepository;
 
     public Page<Product> getPageWithProducts(Integer page, Category category, Map<String, String> filters) {
         pageable = PageRequest.of(page, 6, sortProd(filters));
@@ -37,7 +33,7 @@ public class ProductService {
 
         if (category != null) {
             products = productRepository.findAllByCategoryOrderByName(pageable, category);
-            if (searchProductsByBrand(filters.get("brandName"),products)) return products;
+            if (searchProductsByBrand(filters.get("brandName"), products)) return products;
         }
 
         if (searchRequest(filters.get("search"))) return products;
@@ -80,9 +76,10 @@ public class ProductService {
     private boolean searchRequest(String productName) {
         if (!productName.isEmpty()) {
             products = new PageImpl<>(productRepository.findAll().stream().filter(product -> product.getName()
-                    .toLowerCase().matches(".*" + productName.toLowerCase() + ".*"))
+                            .toLowerCase().matches(".*" + productName.toLowerCase() + ".*"))
                     .collect(Collectors.toList()));
         }
+
         return products.isEmpty();
     }
 
@@ -99,7 +96,7 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    public List<Product> getProducts(){
+    public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 

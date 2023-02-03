@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.gb.mark.webstore.entity.Order;
-import ru.gb.mark.webstore.entity.OrderStatus;
 import ru.gb.mark.webstore.entity.User;
 import ru.gb.mark.webstore.service.CartService;
 import ru.gb.mark.webstore.service.UserService;
@@ -24,14 +23,13 @@ public class CartController {
     private final UserService userService;
     private final CartService cartService;
 
+
     @ModelAttribute
     public void attributes(Model model, HttpServletRequest request) {
-        model.addAttribute("cart", cartService.getUserSessionCart());
-        model.addAttribute("prodInCart", cartService.getUserSessionCart().getProductCart().keySet());
-        model.addAttribute("prodAndCount", cartService.getUserSessionCart().getProductCart());
-        model.addAttribute("totalSum", cartService.getUserSessionCart().getTotalSum());
-        model.addAttribute("discount", cartService.getUserSessionCart().getDiscount());
-        model.addAttribute("countOfProducts", cartService.getUserSessionCart().getProductsCount());
+        model.addAttribute("cart", cartService.getProducts());
+        model.addAttribute("totalSum", cartService.getTotalSum());
+        model.addAttribute("totalDiscount", cartService.getTotalDiscount());
+        model.addAttribute("totalCount", cartService.getProductsCount());
         model.addAttribute("httpRequest", request);
     }
 
@@ -39,14 +37,14 @@ public class CartController {
     public String cart(Principal principal) {
         if (principal != null) {
             Optional<User> user = userService.findUserByEmail(principal.getName());
-            userService.saveUserCartWithProducts(user.orElseThrow().getCart());
+            user.ifPresent(usr -> userService.saveUserCartWithProducts(usr.getCart()));
         }
         return "cart";
     }
 
     @GetMapping("/add")
-    public String addProductToCart(@RequestParam(name = "id") Long prodId) {
-        cartService.addToCart(prodId);
+    public String addProductToCart(@RequestParam(name = "id") Long id) {
+        cartService.addToCart(id);
         return "redirect:/cart";
     }
 
@@ -72,7 +70,6 @@ public class CartController {
     @PostMapping("/order/checkout")
     public String checkout(Principal principal, Order order) {
         order.setUser(userService.findUserByEmail(principal.getName()).orElseThrow());
-        order.setStatus(OrderStatus.NEW);
         cartService.buyProducts(order);
         return "order";
 
