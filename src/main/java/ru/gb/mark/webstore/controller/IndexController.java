@@ -1,22 +1,21 @@
 package ru.gb.mark.webstore.controller;
+
 import jakarta.servlet.http.HttpServletRequest;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-import ru.gb.mark.webstore.entity.Category;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.context.request.WebRequest;
 import ru.gb.mark.webstore.entity.Product;
 import ru.gb.mark.webstore.repository.BrandRepository;
 import ru.gb.mark.webstore.service.CartService;
 import ru.gb.mark.webstore.service.CategoryService;
 import ru.gb.mark.webstore.service.ProductService;
-
-import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
 
 @Slf4j
 @Controller
@@ -26,10 +25,8 @@ public class IndexController {
 
     private final ProductService productService;
     private final CategoryService categoryService;
-    private Page<Product> products;
     private final BrandRepository brandRepository;
     private final CartService cartService;
-    private final Map<String, String> filters = new HashMap<>();
 
     @ModelAttribute
     public void attributes(Model model, HttpServletRequest httpServletRequest) {
@@ -38,11 +35,6 @@ public class IndexController {
         model.addAttribute("httpRequest", httpServletRequest);
     }
 
-
-    @GetMapping("/menu")
-    public String menu(){
-        return "/menu";
-    }
 
     @GetMapping("/login")
     public String login(Model model, @RequestParam(value = "error", required = false) Boolean error) {
@@ -56,57 +48,19 @@ public class IndexController {
 
 
     @GetMapping
-    public String showProducts(Model model,
-                               @RequestParam(required = false, defaultValue = "0", value = "page") Integer page,
-                               @RequestParam(required = false, defaultValue = "", name = "search") String prodName,
-                               @RequestParam(required = false, defaultValue = "", name = "minPrice") String minPrice,
-                               @RequestParam(required = false, defaultValue = "", name = "maxPrice") String maxPrice,
-                               @RequestParam(required = false, name = "brandName") String brandName) {
-
-        filters.put("search", prodName);
-        filters.put("minPrice", minPrice);
-        filters.put("maxPrice", maxPrice);
-        filters.put("brandName", brandName);
-
-        products = productService.getPageWithProducts(page, null, filters);
-
-        model.addAttribute("productName", prodName);
+    public String load(WebRequest webRequest, Model model) {
+        Page<Product> products = productService.search(webRequest);
         model.addAttribute("products", products);
-        model.addAttribute("pageable", productService.getPageable());
         return "index";
     }
-
-    @GetMapping("/categories/{category}")
-    public String showProductsByCategory(Model model,
-                                         @PathVariable(required = false, name = "category") @NonNull String categoryName,
-                                         @RequestParam(required = false, defaultValue = "0", value = "page") Integer page,
-                                         @RequestParam(required = false, defaultValue = "", value = "search") @NonNull String productName,
-                                         @RequestParam(required = false, defaultValue = "", name = "minPrice") String minPrice,
-                                         @RequestParam(required = false, defaultValue = "", name = "maxPrice") String maxPrice,
-                                         @RequestParam(required = false, name = "brandName") String brandName) {
-
-        filters.put("search", productName);
-        filters.put("minPrice", minPrice);
-        filters.put("maxPrice", maxPrice);
-        filters.put("brandName", brandName);
-
-        if (!categoryName.isEmpty()) {
-            Category category = categoryService.getCategories().stream().filter(c -> c.getName().equals(categoryName)).iterator().next();
-            products = productService.getPageWithProducts(page, category, filters);
-        }
-        model.addAttribute("products", products);
-        model.addAttribute("pageable", productService.getPageable());
-        return "index";
-    }
-
 
     @GetMapping("/add")
-    public String addProductToCart(@RequestParam(name = "id") Long prodId,
-                                   @RequestParam(required = false, name = "page") Integer page,
-                                   @RequestParam(required = false, defaultValue = "", name = "search") String search) {
-
+    public String addProductToCart(
+            @RequestParam(name = "id") Long prodId,
+            @RequestParam(required = false, name = "page") Integer page
+    ) {
         cartService.addToCart(prodId);
-        return "redirect:/?page=" + page + "&search=" + search;
+        return "redirect:/?page=" + page;
     }
 
 

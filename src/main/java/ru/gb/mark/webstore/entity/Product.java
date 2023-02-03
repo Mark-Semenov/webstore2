@@ -1,5 +1,6 @@
 package ru.gb.mark.webstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -26,6 +27,7 @@ public class Product implements Cloneable {
     private String image;
     private Integer count;
 
+    @JsonBackReference
     @ManyToMany
     @ToString.Exclude
     @JoinTable(
@@ -35,7 +37,7 @@ public class Product implements Cloneable {
     )
     private List<Category> category;
 
-
+    @JsonBackReference
     @ToString.Exclude
     @ManyToOne
     @JoinTable(
@@ -59,7 +61,6 @@ public class Product implements Cloneable {
     }
 
 
-    //Prototype
     @Transient
     @Override
     public Product clone() {

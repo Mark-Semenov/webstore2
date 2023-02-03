@@ -1,5 +1,6 @@
 package ru.gb.mark.webstore.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
@@ -23,6 +24,7 @@ public class User {
     private String phone;
 
     @ToString.Exclude
+    @JsonBackReference
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",

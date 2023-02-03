@@ -1,9 +1,9 @@
 package ru.gb.mark.webstore.entity;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.ToString;
 
-import jakarta.persistence.*;
 import java.util.List;
 
 @Data

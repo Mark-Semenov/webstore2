@@ -22,19 +22,19 @@
                             <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <li th:each="category : ${@categoryService.getCategories()}">
                                     <a class="dropdown-item" type="request"
-                                       th:href="@{'/categories/' + ${category.name}}"
-                                       th:text="${category.name}"/>
+                                       th:href="@{'/?category=' + ${category.getName()}}"
+                                       th:text="${category.getName()}"/>
                                 </li>
                             </ul>
                         </li>
                     </ul>
                     <div class="search" th:unless="${@request.getServletPath().equals('/cart')}">
-                        <form class="d-flex">
-                            <input class="form-control me-2 " name="search" type="search" placeholder="Search"
+                        <form class="d-flex" action="/">
+                            <input class="form-control me-2" name="search" type="search" placeholder="Search"
                                    aria-label="Search"/>
                             <button class="btn btn-outline-success" type="submit">Search</button>
                         </form>
-                    </div >
+                    </div>
 
                     <div class="empty" th:unless="${@request.getServletPath().equals('/')}">
                     </div>
@@ -55,7 +55,8 @@
             <div class="sign-up-main">
                 <a th:if="${#authentication.name.equals('anonymousUser')}" th:href="@{'/reg'}">Sign Up</a>
                 <a th:if="${#authentication.name.equals('anonymousUser')}" th:href="@{'/login'}">Sign In</a>
-                <a th:if="${!#authentication.name.equals('anonymousUser') && #authorization.expression('hasRole(''USER'')')}"  th:href="@{'/user'}"
+                <a th:if="${!#authentication.name.equals('anonymousUser') && #authorization.expression('hasRole(''USER'')')}"
+                   th:href="@{'/user'}"
                    th:text="${#authentication.name}"/>
             </div>
         </div>

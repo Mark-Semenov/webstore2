@@ -1,7 +1,7 @@
 package ru.gb.mark.webstore.service.cart;
 
 import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.SessionScope;
@@ -20,10 +20,8 @@ import java.util.Map;
 
 @Log4j2
 @Component
-@AllArgsConstructor
+@Data
 @SessionScope
-
-//Facade pattern
 public class BaseUserCart implements UserCart {
 
     private Map<Product, Integer> productCart;
@@ -31,6 +29,7 @@ public class BaseUserCart implements UserCart {
     private final ProductService productService;
     private final ProductInCartRepository productInCartRepository;
     private final CartRepository cartRepository;
+
 
     @PostConstruct
     void init() {
@@ -97,6 +96,7 @@ public class BaseUserCart implements UserCart {
         return productCart;
     }
 
+
     @Override
     public Integer getProductCount(Product product) {
         return productCart.getOrDefault(product, 0);
@@ -126,18 +126,17 @@ public class BaseUserCart implements UserCart {
     @Override
     public void saveCart(Cart cart) {
         ProductInCart product;
-        List<ProductInCart> listOfProductInCart = new ArrayList<>();
+        List<ProductInCart> temp = new ArrayList<>();
         if (!productCart.keySet().isEmpty()) {
             for (Product p : productCart.keySet()) {
-                product = new ProductInCart();
-                product.setProduct(p);
-                product.setCount(getProductCount(p));
+                product = new ProductInCart(p, getProductCount(p));
                 productInCartRepository.save(product);
-                listOfProductInCart.add(product);
+                temp.add(product);
             }
-            cart.setProducts(listOfProductInCart);
+            cart.setProducts(temp);
+            cartRepository.save(cart);
         } else cart.setProducts(null);
 
-        cartRepository.save(cart);
     }
+
 }

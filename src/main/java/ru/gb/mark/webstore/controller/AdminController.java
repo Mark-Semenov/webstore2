@@ -2,7 +2,6 @@ package ru.gb.mark.webstore.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +27,6 @@ public class AdminController {
     private final ProductService productService;
     private final CategoryService categoryService;
     private final RoleService roleService;
-    private final BCryptPasswordEncoder encoder;
     private final FileService fileService;
     private final BrandRepository brandRepository;
     private final OrderRepository orderRepository;
@@ -60,7 +58,6 @@ public class AdminController {
     @PostMapping("/new_user")
     public String addNewUser(UserDTO user, Role role) {
         user.setRole(role.getName());
-        user.setPassword(encoder.encode(user.getPassword()));
         userService.registerNewUserAccount(user);
         return "admin";
     }

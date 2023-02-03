@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class BeanConfig {
 
-
     @Bean
     public BCryptPasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
@@ -20,5 +19,6 @@ public class BeanConfig {
     public HttpServletRequest request(HttpServletRequest request) {
         return request;
     }
+
 
 }
