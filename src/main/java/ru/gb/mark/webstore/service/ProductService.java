@@ -2,94 +2,56 @@ package ru.gb.mark.webstore.service;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.*;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.WebRequest;
 import ru.gb.mark.webstore.entity.AdminPanelBlock;
-import ru.gb.mark.webstore.entity.Category;
 import ru.gb.mark.webstore.entity.Product;
 import ru.gb.mark.webstore.repository.AdminPanelBlockRepository;
+import ru.gb.mark.webstore.repository.CategoryRepository;
 import ru.gb.mark.webstore.repository.ProductRepository;
+import ru.gb.mark.webstore.service.search.ClearSearch;
+import ru.gb.mark.webstore.service.search.FilteredSearch;
+import ru.gb.mark.webstore.service.search.Search;
+import ru.gb.mark.webstore.service.search.SearchParameters;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @Data
+@Log4j2
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private Page<Product> products;
-    private Pageable pageable;
+    private final CategoryRepository categoryRepository;
+
+    private final Search search;
     private final AdminPanelBlockRepository adminPanelBlockRepository;
 
-    public Page<Product> getPageWithProducts(Integer page, Category category, Map<String, String> filters) {
-        pageable = PageRequest.of(page, 6, sortProd(filters));
-        products = productRepository.findAll(pageable);
+    //Strategy pattern used
+    public Page<Product> search(WebRequest webRequest) {
 
-        if (category != null) {
-            products = productRepository.findAllByCategoryOrderByName(pageable, category);
-            if (searchProductsByBrand(filters.get("brandName"), products)) return products;
+        SearchParameters parameters = new SearchParameters(webRequest, productRepository, categoryRepository);
+
+        if (webRequest.getParameterMap().isEmpty()) {
+            log.info("CLEAR SEARCH");
+            search.setSearchStrategy(new ClearSearch(parameters));
+        } else {
+            log.info("FILTERED SEARCH");
+            search.setSearchStrategy(new FilteredSearch(parameters));
+
         }
 
-        if (searchRequest(filters.get("search"))) return products;
+        return search.execute();
 
-        findByPriceBetween(filters);
-
-        return products;
-    }
-
-    private Sort sortProd(Map<String, String> filters) {
-        if (filters.get("minPrice") != null && filters.get("maxPrice") != null) {
-            if (!filters.get("minPrice").isEmpty() && !filters.get("maxPrice").isEmpty()) {
-                return Sort.by("price");
-            }
-        }
-
-        return Sort.by("id");
-    }
-
-    private void findByPriceBetween(Map<String, String> filters) {
-        Long min = !filters.get("minPrice").isEmpty() ? Long.valueOf(filters.get("minPrice")) : null;
-        Long max = !filters.get("maxPrice").isEmpty() ? Long.valueOf(filters.get("maxPrice")) : null;
-        if (min != null && max != null) {
-            products = productRepository.findAllByPriceBetween(
-                    BigDecimal.valueOf(min),
-                    BigDecimal.valueOf(max),
-                    pageable);
-        }
-
-    }
-
-    public List<Product> findByName(String name) {
-        return productRepository.findAllByNameContainingIgnoreCase(name);
     }
 
     public List<AdminPanelBlock> getAdminBlocks() {
         return adminPanelBlockRepository.findAll();
-    }
-
-    private boolean searchRequest(String productName) {
-        if (!productName.isEmpty()) {
-            products = new PageImpl<>(productRepository.findAll().stream().filter(product -> product.getName()
-                            .toLowerCase().matches(".*" + productName.toLowerCase() + ".*"))
-                    .collect(Collectors.toList()));
-        }
-
-        return products.isEmpty();
-    }
-
-    private boolean searchProductsByBrand(String brandName, Page<Product> products) {
-        if (brandName != null && !brandName.isEmpty()) {
-            this.products = new PageImpl<>(products.stream()
-                    .filter(product -> product.getBrand().getTitle().equals(brandName))
-                    .collect(Collectors.toList()));
-        }
-        return this.products.isEmpty();
     }
 
     public Optional<Product> findProductById(Long id) {

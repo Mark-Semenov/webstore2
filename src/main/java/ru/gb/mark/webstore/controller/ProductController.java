@@ -10,8 +10,6 @@ import ru.gb.mark.webstore.entity.Product;
 import ru.gb.mark.webstore.service.CartService;
 import ru.gb.mark.webstore.service.ProductService;
 
-import java.util.List;
-
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/product")
@@ -22,28 +20,9 @@ public class ProductController {
 
 
     @GetMapping
-    public String productInfo(Model model,
-                              @RequestParam(name = "id", required = false) Long productId,
-                              @RequestParam(name = "search", required = false) String search) {
-        List<Product> productsList = null;
-
-        if (productId != null) {
-            productsList = List.of(productService.findProductById(productId).orElseThrow());
-        }
-
-        if (search != null && !search.equals("")) {
-            productsList = productService.findByName(search);
-
-            if (productsList.isEmpty()) {
-                model.addAttribute("notFound", "Sorry, product " + search + " not found. Please, try again.");
-            } else if (productsList.size() == 1) {
-                productId = productsList.get(0).getId();
-                productsList = List.of(productService.findProductById(productId).orElseThrow());
-            }
-        }
-
-
-        model.addAttribute("products", productsList);
+    public String productInfo(Model model, @RequestParam(name = "id", required = false) Long productId) {
+        Product p = productService.findProductById(productId).orElseThrow();
+        model.addAttribute("products", p);
         return "product";
     }
 

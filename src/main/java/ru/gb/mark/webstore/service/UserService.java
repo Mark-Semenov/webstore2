@@ -13,7 +13,6 @@ import ru.gb.mark.webstore.dto.UserDTO;
 import ru.gb.mark.webstore.entity.Cart;
 import ru.gb.mark.webstore.entity.User;
 import ru.gb.mark.webstore.entity.UserWrapper;
-import ru.gb.mark.webstore.repository.CartRepository;
 import ru.gb.mark.webstore.repository.RoleRepository;
 import ru.gb.mark.webstore.repository.UserRepository;
 import ru.gb.mark.webstore.service.cart.UserCart;
@@ -28,7 +27,6 @@ public class UserService implements UserDetailsService {
     private final UserCart userCart;
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final CartRepository cartRepository;
     private final BCryptPasswordEncoder encoder;
 
 
@@ -46,7 +44,6 @@ public class UserService implements UserDetailsService {
                     userCart.loadSavedProducts(cart.getProducts());
                 }
             }
-
         }
 
         return user.map(usr -> new org.springframework.security.core.userdetails.User(
@@ -60,7 +57,6 @@ public class UserService implements UserDetailsService {
     }
 
 
-    //Builder used
     public String registerNewUserAccount(UserDTO user) {
 
         User u = UserWrapper.builder()
@@ -76,7 +72,6 @@ public class UserService implements UserDetailsService {
 
 
         userRepository.save(u);
-        cartRepository.save(u.getCart());
         saveUserCartWithProducts(u.getCart());
         userCart.clearCart();
 

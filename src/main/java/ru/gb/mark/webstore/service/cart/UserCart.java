@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-//Facade pattern
 public interface UserCart {
 
     void loadSavedProducts(List<ProductInCart> products);
@@ -36,6 +35,7 @@ public interface UserCart {
     BigDecimal getProductDiscount(Product product);
 
     void saveCart(Cart cart);
+
 
 
 }

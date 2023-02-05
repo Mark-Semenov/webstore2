@@ -22,4 +22,8 @@ public class ProductInCart {
 
     private Integer count;
 
+    public ProductInCart(Product product, Integer count) {
+        this.product = product;
+        this.count = count;
+    }
 }

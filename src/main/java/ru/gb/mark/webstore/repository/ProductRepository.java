@@ -3,7 +3,6 @@ package ru.gb.mark.webstore.repository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.PagingAndSortingRepository;
-import ru.gb.mark.webstore.entity.Brand;
 import ru.gb.mark.webstore.entity.Category;
 import ru.gb.mark.webstore.entity.Product;
 
@@ -17,15 +16,11 @@ public interface ProductRepository extends PagingAndSortingRepository<Product, L
 
     List<Product> findAll();
 
-    Page<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
-
-    Page<Product> findAllByCategoryOrderByName(Pageable pageable, Category category);
-
     Page<Product> findAllByPriceBetween(BigDecimal price, BigDecimal price2, Pageable pageable);
 
-    List<Product> findByBrand(String name);
+    Page<Product> findByCategory(Category category, Pageable pageable);
 
-    List<Product> findAllByNameContainingIgnoreCase(String name);
+    Page<Product> findAllByNameContainingIgnoreCase(String name, Pageable pageable);
 
     void save(Product product);
 
