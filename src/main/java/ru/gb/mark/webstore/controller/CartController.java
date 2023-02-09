@@ -3,10 +3,13 @@ package ru.gb.mark.webstore.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import ru.gb.mark.webstore.entity.Order;
+import ru.gb.mark.webstore.dto.OrderDTO;
+import ru.gb.mark.webstore.dto.OrderStatus;
 import ru.gb.mark.webstore.entity.User;
 import ru.gb.mark.webstore.service.CartService;
 import ru.gb.mark.webstore.service.UserService;
@@ -18,6 +21,7 @@ import java.util.Optional;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/cart")
+@EnableMethodSecurity
 public class CartController {
 
     private final UserService userService;
@@ -26,6 +30,7 @@ public class CartController {
 
     @ModelAttribute
     public void attributes(Model model, HttpServletRequest request) {
+        model.addAttribute("status", OrderStatus.NEW);
         model.addAttribute("cart", cartService.getProducts());
         model.addAttribute("totalSum", cartService.getTotalSum());
         model.addAttribute("totalDiscount", cartService.getTotalDiscount());
@@ -38,13 +43,14 @@ public class CartController {
         if (principal != null) {
             Optional<User> user = userService.findUserByEmail(principal.getName());
             user.ifPresent(usr -> userService.saveUserCartWithProducts(usr.getCart()));
+
         }
         return "cart";
     }
 
     @GetMapping("/add")
     public String addProductToCart(@RequestParam(name = "id") Long id) {
-        cartService.addToCart(id);
+        cartService.addProductToCart(id);
         return "redirect:/cart";
     }
 
@@ -60,17 +66,16 @@ public class CartController {
         return "redirect:/cart";
     }
 
-
     @GetMapping("/order")
     public String buyProducts(Model model) {
-        model.addAttribute("order", new Order());
+        model.addAttribute("order", OrderDTO.builder().build());
         return "order";
     }
 
+    @PreAuthorize(value = "hasRole('ROLE_USER')")
     @PostMapping("/order/checkout")
-    public String checkout(Principal principal, Order order) {
-        order.setUser(userService.findUserByEmail(principal.getName()).orElseThrow());
-        cartService.buyProducts(order);
+    public String makeOrder(OrderDTO orderDTO) {
+        cartService.checkout(orderDTO);
         return "order";
 
     }

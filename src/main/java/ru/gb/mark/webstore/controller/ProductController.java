@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.gb.mark.webstore.entity.Product;
+import ru.gb.mark.webstore.dto.ProductDTO;
 import ru.gb.mark.webstore.service.CartService;
 import ru.gb.mark.webstore.service.ProductService;
 
@@ -20,17 +20,19 @@ public class ProductController {
 
 
     @GetMapping
-    public String productInfo(Model model, @RequestParam(name = "id", required = false) Long productId) {
-        Product p = productService.findProductById(productId).orElseThrow();
-        model.addAttribute("products", p);
+    public String productInfo(Model model, @RequestParam(name = "id", required = false) Long id) {
+        ProductDTO product = productService
+                .getEntityMapper()
+                .mapEntityToDto(productService.findProductById(id).orElse(null));
+        model.addAttribute("product", product);
         return "product";
     }
 
 
     @GetMapping("/add")
-    public String addProductToCart(@RequestParam(name = "id") Long prodId) {
-        cartService.addToCart(prodId);
-        return String.format("redirect:/product?id=%d", prodId);
+    public String addProductToCart(@RequestParam(name = "id") Long id) {
+        cartService.addProductToCart(id);
+        return String.format("redirect:/product?id=%d", id);
     }
 
 

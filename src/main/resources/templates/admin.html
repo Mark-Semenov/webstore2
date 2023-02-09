@@ -3,9 +3,6 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-          crossorigin="anonymous"/>
     <link th:href="@{/css/style.css}" rel="stylesheet"/>
     <title>Admin panel</title>
 </head>
@@ -45,10 +42,10 @@
         </div>
 
         <div class="right-side">
-            <div class="add-user-form" th:if="${@request.getServletPath().equals('/admin/new_user')}">
+            <div class="add-user-form" th:if="${@request.getServletPath().equals('/admin/user/new')}">
                 <h3>Add new user</h3>
                 <div>
-                    <form th:action="@{/admin/new_user}" th:object="${userDTO}" method="post">
+                    <form th:action="@{/admin/user/new}" th:object="${userDTO}" method="post">
                         <div class="input-group mb-3">
                             <span class="input-group-text">Firstname</span>
                             <input required="required" th:field="*{firstname}" type="text" class="form-control">
@@ -72,21 +69,30 @@
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Password</span>
-                            <input th:field="*{password}" type="password" class="form-control"
-                                   id="exampleInputPassword" required="required">
+                            <input th:field="*{password}"
+                                   type="password"
+                                   class="form-control"
+                                   id="exampleInputPassword"
+                                   required="required">
                         </div>
                         <div class="input-group mb-3">
-                            <span class="input-group-text">Repeat password</span>
-                            <input th:field="*{matchingPassword}" type="password" class="form-control"
-                                   required="required">
+                            <span class="input-group-text"></span>
+                            <label for="matching-password">
+                                Repeat password
+                                <input id="matching-password"
+                                       th:field="*{matchingPassword}"
+                                       type="password"
+                                       class="form-control"
+                                       required="required">
+                            </label>
                         </div>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">Role</span>
-                            <select th:object="${role}" th:field="*{name}" class="form-select"
+                            <select th:field="*{role}" class="form-select"
                                     aria-label="Default select example" required="required">
                                 <option th:each="r : ${roles}"
-                                        th:text="${r.substring(5)}"
+                                        th:text="${r}"
                                         th:value="${r}"/>
                             </select>
                         </div>
@@ -99,62 +105,91 @@
                 </div>
             </div>
 
-            <div class="add-product-form" th:if="${@request.getServletPath().equals('/admin/new_product')}">
+            <div class="add-product-form" th:if="${@request.getServletPath().equals('/admin/product/new')}">
                 <h3>Add product</h3>
                 <div>
-                    <form id="add-product-form" th:action="@{/admin/new_product}" th:object="${product}" method="post"
+                    <form id="add-product-form"
+                          th:action="@{/admin/product/new/product}"
+                          th:object="${product}"
+                          method="post"
                           enctype="multipart/form-data">
-                        <input type="hidden" th:field="*{id}">
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">Name</span>
-                            <input th:field="*{name}" id="product-name" type="text" class="form-control">
+                            <input th:field="*{name}"
+                                   id="product-name"
+                                   type="text"
+                                   class="form-control">
                         </div>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">Description</span>
-                            <input id="description" th:field="*{description}" type="text" class="form-control">
+                            <input id="description"
+                                   th:field="*{description}"
+                                   type="text"
+                                   class="form-control">
                         </div>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">Status</span>
-                            <input id="status" th:field="*{status}" type="text" class="form-control">
+                            <input id="status"
+                                   th:field="*{status}"
+                                   type="text"
+                                   class="form-control">
                         </div>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">Price</span>
-                            <input id="price" th:field="*{price}" type="text" class="form-control">
+                            <input id="price"
+                                   th:field="*{price}"
+                                   type="text"
+                                   class="form-control">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Old price</span>
-                            <input id="old-price" th:field="*{oldPrice}" type="text" class="form-control">
+                            <input id="old-price"
+                                   th:field="*{oldPrice}"
+                                   type="text"
+                                   class="form-control">
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Count</span>
-                            <input id="count" th:field="*{count}" type="text" class="form-control">
+                            <input id="count"
+                                   th:field="*{count}"
+                                   type="text"
+                                   class="form-control">
                         </div>
                         <div>
                             <h5>Choice picture</h5>
                         </div>
                         <div class="input-group mb-3">
-                            <input class="form-control" multiple="multiple" type="file" id="formFile" name="file"/>
+                            <input class="form-control"
+                                   th:field="*{file}"
+                                   multiple="multiple"
+                                   type="file"
+                                   id="formFile"
+                                   name="file"/>
                         </div>
 
                         <div class="input-group mb-3">
                             <span class="input-group-text">Category</span>
-                            <select class="form-select" th:name="categoryName">
-                                <option th:each="category : ${categories}"
-                                        th:text="${category}"
-                                        th:value="${category}"/>
-                            </select>
+                            <label>
+                                <select class="form-select" th:field="*{categoryName}">
+                                    <option th:each="category : ${categories}"
+                                            th:text="${category}"
+                                            th:value="${category}"/>
+                                </select>
+                            </label>
                         </div>
                         <div class="input-group mb-3">
                             <span class="input-group-text">Brands</span>
-                            <select class="form-select" th:name="brandName">
-                                <option th:each="brand : ${brands}"
-                                        th:text="${brand}"
-                                        th:value="${brand}"/>
-                            </select>
+                            <label>
+                                <select class="form-select" th:field="*{brandName}">
+                                    <option th:each="brand : ${brands}"
+                                            th:text="${brand}"
+                                            th:value="${brand}"/>
+                                </select>
+                            </label>
                         </div>
 
                         <div>
@@ -174,7 +209,10 @@
                         <th scope="col">Description</th>
                         <th scope="col">Price</th>
                         <th scope="col">Old price</th>
-                        <th scope="col">status</th>
+                        <th scope="col">Status</th>
+                        <th scope="col">Brand</th>
+                        <th scope="col">Category</th>
+                        <th scope="col">Count</th>
                     </tr>
                     </thead>
                     <tbody th:each="p:${products}">
@@ -184,11 +222,12 @@
                         <td th:text="${p.price}"/>
                         <td th:text="${p.oldPrice}"/>
                         <td th:text="${p.status}"/>
-                        <td th:text="${p.brand.title}"/>
-                        <td th:text="${p.category}"/>
+                        <td th:text="${p.brandName}"/>
+                        <td th:text="${p.categoryName}"/>
+                        <td th:text="${p.count}"/>
                         <td><a th:href="@{${@request.getServletPath()} +'/update/' + ${p.id}}">Update</a>
                         </td>
-                        <td><a th:href="@{${@request.getServletPath()} +'/remove/' + ${p.id}}">Delete</a>
+                        <td><a th:href="@{${@request.getServletPath()} +'/remove/' + ${p.id}}">Remove</a>
                         </td>
                     </tr>
                     </tbody>
@@ -233,10 +272,17 @@
                 </table>
             </div>
 
-            <div class="admin-panel-products" th:if="${@request.getServletPath().equals('/admin/new_category')}">
+            <div class="admin-panel-products"
+                 th:if="${@request.getServletPath().equals('/admin/category/new')}">
+
                 <h3>Add category</h3>
-                <form method="post" th:object="${newCategory}" th:action="@{/admin/new_category}">
-                    <input class="form-control" type="text" th:field="*{name}">
+
+                <form method="post"
+                      th:object="${newCategory}"
+                      th:action="@{/admin/category/new}">
+                    <input class="form-control"
+                           type="text"
+                           th:field="*{name}">
                     <button class="btn btn-primary" type="submit">Submit</button>
                 </form>
             </div>
@@ -246,7 +292,6 @@
     </div>
 
 
-</div>
 </div>
 
 

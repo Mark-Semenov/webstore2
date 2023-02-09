@@ -1,0 +1,164 @@
+<div class="products" xmlns:th="http://www.thymeleaf.org" th:fragment="products">
+
+    <!-- Start Content -->
+    <div class="row">
+
+        <!--      Left menu start-->
+        <div class="col-lg-3">
+            <h1 class="h2 pb-4">Categories</h1>
+            <ul class="list-unstyled templatemo-accordion">
+                <li class="pb-3" th:each="category : ${@categoryService.getCategories()}">
+                    <a class="collapsed d-flex justify-content-between h3 text-decoration-none"
+                       th:href="@{'/?category=' + ${category.getName()}}"
+                       th:text="${category.getName()}">
+                        <i class="fa fa-fw fa-chevron-circle-down mt-1"></i>
+                    </a>
+                    <ul class="collapse show list-unstyled pl-3">
+                        <li><a class="text-decoration-none"
+                               th:href="@{'/?category=' + ${category.getName()}}"
+                               th:text="${category.getName()}"/>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!--    Left menu end-->
+
+        <div class="col-lg-9">
+            <!--      UP filter start-->
+            <div class="row">
+                <div class="col-md-6">
+                    <ul class="list-inline shop-top-menu pb-3 pt-1">
+                        <li class="list-inline-item">
+                            <a class="h3 text-dark text-decoration-none mr-3" href="#">All</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="h3 text-dark text-decoration-none mr-3" href="#">Men's</a>
+                        </li>
+                        <li class="list-inline-item">
+                            <a class="h3 text-dark text-decoration-none" href="#">Women's</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-md-6 pb-4">
+                    <div class="d-flex">
+                        <select class="form-control">
+                            <option>Price</option>
+                            <option>A to Z</option>
+                            <option>Category</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <!--        UP filter end-->
+
+
+            <!--        Product cards start-->
+            <div class="row">
+
+                <!--                    Product card-->
+
+                <div class="col-md-4" th:each="product : ${products}">
+                    <div class="card mb-4 product-wap rounded-0">
+                        <div class="card rounded-0">
+                            <img class="card-img rounded-0 img-fluid"
+                                 th:src="@{'/images/'+ ${product.image}}"
+                                 th:alt="${product.name}"/>
+                            <div class="card-img-overlay rounded-0 product-overlay d-flex align-items-center justify-content-center">
+                                <ul class="list-unstyled">
+                                    <li>
+                                        <a class="btn btn-success text-white"
+                                           href="shop-single.html">
+                                            <i class="far fa-heart"></i>
+                                        </a>
+                                    </li>
+                                    <li><a class="btn btn-success text-white mt-2" href="shop-single.html"><i
+                                            class="far fa-eye"></i></a></li>
+
+                                    <li>
+                                        <a class="btn btn-success text-white mt-2"
+                                           th:href="@{'/add?id=' + ${product.id} + '&page='
+                                               + ${products.getPageable().getPageNumber()}
+                                               + '&search=' + ${product.getName()}}">
+                                            <!--                                               class="card-link"-->
+                                            <i class="fas fa-cart-plus"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <a th:href="@{'/product?id=' + ${product.id}}"
+                               th:text="'More'" class="h3 text-decoration-none"/>
+
+                            <ul class="w-100 list-unstyled d-flex justify-content-between mb-0">
+                                <li th:text="${product.name}">M/L/X/XL</li>
+                                <li class="pt-2">
+                                    <span class="product-color-dot color-dot-red float-left rounded-circle ml-1"></span>
+                                    <span class="product-color-dot color-dot-blue float-left rounded-circle ml-1"></span>
+                                    <span class="product-color-dot color-dot-black float-left rounded-circle ml-1"></span>
+                                    <span class="product-color-dot color-dot-light float-left rounded-circle ml-1"></span>
+                                    <span class="product-color-dot color-dot-green float-left rounded-circle ml-1"></span>
+                                </li>
+                            </ul>
+                            <ul class="list-unstyled d-flex justify-content-center mb-1">
+                                <li>
+                                    <i class="text-warning fa fa-star"></i>
+                                    <i class="text-warning fa fa-star"></i>
+                                    <i class="text-warning fa fa-star"></i>
+                                    <i class="text-muted fa fa-star"></i>
+                                    <i class="text-muted fa fa-star"></i>
+                                </li>
+                            </ul>
+                            <p class="text-center mb-0" th:text="${product.price}"/>
+                        </div>
+                    </div>
+                </div>
+                <!--                    Product card end-->
+
+            </div>
+
+            <!--                Pagination start-->
+            <div class="row">
+                <ul class="pagination pagination-lg justify-content-end">
+                    <li class="page-item disabled">
+                        <a class="page-link active rounded-0 mr-3 shadow-sm border-top-0 border-left-0"
+                           th:if="${products.getPageable().hasPrevious()}"
+                           th:href="@{${@request.getContextPath()} + '?page='
+                               + ${products.getPageable().previousOrFirst().getPageNumber()}}">Previous</a>
+
+                        <!--                            <a class="page-link active rounded-0 mr-3 shadow-sm border-top-0 border-left-0" href="#"-->
+                        <!--                               tabindex="-1">1</a>-->
+                    </li>
+
+                    <div th:each="i: ${#numbers.sequence(0, products.getTotalPages() - 1)}"
+                         th:if="${products.getPageable().isPaged()}">
+                        <li class="page-item">
+                            <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark"
+                               th:unless="${products.getPageable().getPageNumber()==i}"
+                               th:href="@{${@request.getContextPath()} + '?page=' + ${i}}"
+                               th:text="${i + 1}"/>
+                            <a class="page-link rounded-0 mr-3 shadow-sm border-top-0 border-left-0 text-dark"
+                               th:if="${products.getPageable().getPageNumber()==i}"
+                               th:text="${i + 1}"/>
+                        </li>
+                    </div>
+
+                    <li class="page-item">
+                        <a class="page-link rounded-0 shadow-sm border-top-0 border-left-0 text-dark"
+                           th:if="${products.hasNext()}"
+                           th:href="@{${@request.getContextPath()} + '?page='
+                               + ${products.getPageable().next().getPageNumber()}}">Next</a>
+                    </li>
+                </ul>
+            </div>
+            <!--                Pagination end-->
+
+        </div>
+
+    </div>
+    <!-- End Content -->
+
+</div>
+
+</div>

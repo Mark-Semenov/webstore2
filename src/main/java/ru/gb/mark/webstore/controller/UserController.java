@@ -16,7 +16,6 @@ import ru.gb.mark.webstore.service.UserService;
 public class UserController {
 
     private final UserService userService;
-    private String emailExist = null;
 
     @GetMapping("/user")
     public String welcome() {
@@ -26,8 +25,7 @@ public class UserController {
 
     @GetMapping("/reg")
     public String registrationUser(Model model) {
-        model.addAttribute("newUser", new UserDTO());
-        model.addAttribute("emailExist", emailExist);
+        model.addAttribute("userDTO", UserDTO.builder().build());
         return "reg";
     }
 

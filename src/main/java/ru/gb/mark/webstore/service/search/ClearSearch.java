@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.gb.mark.webstore.entity.Product;
 
-//Strategy pattern
 public record ClearSearch(SearchParameters parameters) implements SearchStrategy {
     @Override
     public Page<Product> find() {

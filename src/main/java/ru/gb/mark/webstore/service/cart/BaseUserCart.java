@@ -78,7 +78,7 @@ public class BaseUserCart implements UserCart {
     }
 
     @Override
-    public Product getById(Long id) {
+    public Product getProductById(Long id) {
         Product product = productCart
                 .keySet()
                 .stream()

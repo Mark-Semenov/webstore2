@@ -12,7 +12,7 @@ CREATE TABLE users
 
 INSERT INTO users (firstname, lastname, date, password, email, phone)
 VALUES ('admin', 'admin', '01.01.2000', '$2y$12$2ITRQJb/fKRUMnyZkwyA6OPOl5jyERiK6x/n7Xait/esoBmZfi6Ne',
-        'admin@corp.com', '+74950000000'); --login/pas: admin@corp.com / admin
+        'admin@corp.com', '+74950000000'); --test login/pas: admin@corp.com / admin
 
 
 drop table if exists roles cascade;

@@ -1,6 +1,9 @@
-package ru.gb.mark.webstore.entity;
+package ru.gb.mark.webstore.dto;
 
 import lombok.Data;
+import ru.gb.mark.webstore.entity.Cart;
+import ru.gb.mark.webstore.entity.Role;
+import ru.gb.mark.webstore.entity.User;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,11 +15,9 @@ public class UserWrapper {
         return new Builder();
     }
 
-
-    @Data
     public static class Builder {
 
-        private User user;
+        private final User user;
 
         private Builder() {
             this.user = new User();
