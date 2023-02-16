@@ -14,7 +14,6 @@ import org.springframework.web.context.request.WebRequest;
 import ru.gb.mark.webstore.entity.Product;
 import ru.gb.mark.webstore.repository.BrandRepository;
 import ru.gb.mark.webstore.service.CartService;
-import ru.gb.mark.webstore.service.CategoryService;
 import ru.gb.mark.webstore.service.ProductService;
 
 @Slf4j
@@ -24,13 +23,11 @@ import ru.gb.mark.webstore.service.ProductService;
 public class IndexController {
 
     private final ProductService productService;
-    private final CategoryService categoryService;
     private final BrandRepository brandRepository;
     private final CartService cartService;
 
     @ModelAttribute
     public void attributes(Model model, HttpServletRequest httpServletRequest) {
-        model.addAttribute("categories", categoryService.getCategories());
         model.addAttribute("brands", brandRepository.findAll());
         model.addAttribute("httpRequest", httpServletRequest);
     }
@@ -59,7 +56,7 @@ public class IndexController {
             @RequestParam(name = "id") Long prodId,
             @RequestParam(required = false, name = "page") Integer page
     ) {
-        cartService.addToCart(prodId);
+        cartService.addProductToCart(prodId);
         return "redirect:/?page=" + page;
     }
 

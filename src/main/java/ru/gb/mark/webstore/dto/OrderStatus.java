@@ -1,4 +1,4 @@
-package ru.gb.mark.webstore.entity;
+package ru.gb.mark.webstore.dto;
 
 public enum OrderStatus {
     NEW,

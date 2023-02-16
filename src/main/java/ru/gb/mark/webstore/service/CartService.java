@@ -1,64 +1,62 @@
 package ru.gb.mark.webstore.service;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;
+import ru.gb.mark.webstore.dto.EntityMapper;
+import ru.gb.mark.webstore.dto.OrderDTO;
 import ru.gb.mark.webstore.entity.Order;
-import ru.gb.mark.webstore.entity.OrderStatus;
 import ru.gb.mark.webstore.entity.Product;
-import ru.gb.mark.webstore.repository.OrderRepository;
 import ru.gb.mark.webstore.service.cart.UserCart;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Log4j2
+@Data
 @Component
 public class CartService {
 
-    private final OrderRepository orderRepository;
+    private final OrderService orderService;
+    private final UserService userService;
     private final UserCart userCart;
 
+    private final EntityMapper<Order, OrderDTO> mapper;
 
-    public CartService(OrderRepository orderRepository, UserCart userCart) {
-        this.orderRepository = orderRepository;
-        this.userCart = userCart;
-    }
 
-    public void buyProducts(Order order) {
-        order.setStatus(OrderStatus.NEW);
-        order.setTotalSum(userCart.getTotalSum());
-        saveOrder(order);
+    public void checkout(OrderDTO orderDTO) {
+        //TODO
         userCart.clearCart();
     }
 
     public void saveOrder(Order order) {
-        orderRepository.save(order);
+        orderService.saveOrder(order);
     }
 
-    public void addToCart(@NonNull Long prodId) {
-        Product p = userCart.getById(prodId);
-        userCart.addToCart(p);
+    public void addProductToCart(@NonNull Long id) {
+        userCart.addToCart(userCart.getProductById(id));
     }
 
     public void deleteProduct(@NotNull Long prodId) {
-        userCart.removeProduct(userCart.getById(prodId));
+        userCart.removeProduct(userCart.getProductById(prodId));
     }
 
     public void removeOne(Long prodId) {
-        userCart.decreaseProduct(userCart.getById(prodId));
+        userCart.decreaseProduct(userCart.getProductById(prodId));
     }
 
     public Integer getProductsCount() {
         return userCart.getTotalCount();
     }
 
-    public Float getTotalSum() {
-        return userCart.getTotalSum().floatValue();
+    public BigDecimal getTotalSum() {
+        return userCart.getTotalSum();
     }
 
-    public Float getTotalDiscount() {
-        return userCart.getTotalDiscount().floatValue();
+    public BigDecimal getTotalDiscount() {
+        return userCart.getTotalDiscount();
     }
 
     public List<Product> getProducts() {
@@ -66,7 +64,7 @@ public class CartService {
     }
 
 
-    public Integer getOneProdCount(Product product) {
+    public Integer getCountOfProduct(Product product) {
         return userCart.getProductCount(product);
     }
 }

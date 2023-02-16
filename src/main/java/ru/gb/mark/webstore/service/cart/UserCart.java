@@ -20,7 +20,7 @@ public interface UserCart {
 
     void clearCart();
 
-    Product getById(Long id);
+    Product getProductById(Long id);
 
     Map<Product, Integer> getProductCart();
 

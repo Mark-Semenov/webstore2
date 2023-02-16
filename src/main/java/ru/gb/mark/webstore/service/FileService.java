@@ -17,9 +17,17 @@ public class FileService {
     @Value("${classpath:build/resources/main/static/images/}")
     private String imgPath;
 
-    public void setAndWriteImage(MultipartFile file) throws IOException {
+    public void setAndWriteImage(MultipartFile file) {
+
         if (!file.isEmpty()) {
-            file.transferTo(Path.of(imgPath.concat(Objects.requireNonNull(file.getOriginalFilename()))).toAbsolutePath());
+            try {
+                file
+                        .transferTo(
+                                Path.of(imgPath.concat(Objects.requireNonNull(file.getOriginalFilename())))
+                                        .toAbsolutePath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

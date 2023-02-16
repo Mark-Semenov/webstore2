@@ -5,17 +5,13 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import ru.gb.mark.webstore.dto.UserDTO;
-import ru.gb.mark.webstore.entity.*;
-import ru.gb.mark.webstore.repository.BrandRepository;
-import ru.gb.mark.webstore.repository.OrderRepository;
-import ru.gb.mark.webstore.service.*;
+import ru.gb.mark.webstore.dto.*;
+import ru.gb.mark.webstore.service.CategoryService;
+import ru.gb.mark.webstore.service.OrderService;
+import ru.gb.mark.webstore.service.ProductService;
+import ru.gb.mark.webstore.service.UserService;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 @Log4j2
 @Controller
@@ -26,19 +22,15 @@ public class AdminController {
     private final UserService userService;
     private final ProductService productService;
     private final CategoryService categoryService;
-    private final RoleService roleService;
-    private final FileService fileService;
-    private final BrandRepository brandRepository;
-    private final OrderRepository orderRepository;
     private final OrderService orderService;
 
 
     @ModelAttribute
     public void attributes(Model model) {
         model.addAttribute("blocks", productService.getAdminBlocks());
-        model.addAttribute("roles", roleService.getNamesOfRoles());
         model.addAttribute("categories", categoryService.getNamesOfCategories());
-        model.addAttribute("brands", getBrandsNames());
+        model.addAttribute("brands", productService.getBrandsNames());
+        model.addAttribute("roles", Arrays.stream(AppRoles.values()).limit(2));
         model.addAttribute("statuses", OrderStatus.values());
 
     }
@@ -48,49 +40,37 @@ public class AdminController {
         return "admin";
     }
 
-    @GetMapping("/new_user")
+    @GetMapping("/user/new")
     public String createUser(Model model) {
-        model.addAttribute("userDTO", new UserDTO());
-        model.addAttribute("role", new Role());
+        model.addAttribute("userDTO",
+                UserDTO.builder().build());
         return "admin";
     }
 
-    @PostMapping("/new_user")
-    public String addNewUser(UserDTO user, Role role) {
-        user.setRole(role.getName());
+    @PostMapping("/user/new")
+    public String addNewUser(UserDTO user) {
         userService.registerNewUserAccount(user);
         return "admin";
     }
 
-    @GetMapping("/new_product")
+    @GetMapping("/product/new")
     public String createProduct(Model model) {
-        model.addAttribute("product", new Product());
+        model.addAttribute("product",
+                ProductDTO.builder().build());
         return "admin";
     }
 
-    @PostMapping("/new_product")
-    public String addNewProduct(String categoryName, String brandName, MultipartFile file, Product product) throws IOException {
-        Category category = categoryService.getCategoryByName(categoryName);
-        Brand brand = brandRepository.findByTitle(brandName);
-        fileService.setAndWriteImage(file);
-        product.setImage(file.getOriginalFilename());
-        product.setCategory(List.of(category));
-        product.setBrand(brand);
-        product.setSale(product.getOldPrice() != null);
+    @PostMapping("/product/new/product")
+    public String addNewProduct(ProductDTO product) {
         productService.saveProduct(product);
-        brand.setProducts(List.of(product));
-        category.setProducts(List.of(product));
-        return "admin";
-    }
-
-    private List<String> getBrandsNames() {
-        return brandRepository.findAll().stream().map(Brand::getTitle).collect(Collectors.toList());
+        return "redirect:/admin/products";
     }
 
 
     @GetMapping("/products")
     public String showAllProducts(Model model) {
-        model.addAttribute("products", productService.getProductRepository().findAll());
+        model.addAttribute("products",
+                productService.getAllProductsConvertedToDto());
         return "admin";
     }
 
@@ -102,15 +82,22 @@ public class AdminController {
 
     @GetMapping("/products/update/{id}")
     public String updateProduct(Model model, @PathVariable(name = "id") Long id) {
-        Optional<Product> product = productService.findProductById(id);
-        model.addAttribute("prod", product);
-        productService.saveProduct(product.orElseThrow());
+        ProductDTO productDTO = productService
+                .getEntityMapper()
+                .mapEntityToDto(productService.findProductById(id).orElseThrow());
+        model.addAttribute("product", productDTO);
         return "update";
+    }
+
+    @PostMapping("/update/product")
+    public String updateProduct(ProductDTO productDTO) {
+        productService.updateProduct(productDTO);
+        return "redirect:/admin/products";
     }
 
     @GetMapping("/orders")
     public String showAllOrders(Model model) {
-        model.addAttribute("orders", orderRepository.findAll());
+        model.addAttribute("orders", orderService.findOrders());
         return "admin";
     }
 
@@ -121,15 +108,15 @@ public class AdminController {
         return "redirect:/admin/orders";
     }
 
-    @GetMapping("new_category")
+    @GetMapping("/category/new")
     public String addNewCategory(Model model) {
-        model.addAttribute("newCategory", new Category());
+        model.addAttribute("newCategory", CategoryDTO.builder().build());
         return "admin";
     }
 
-    @PostMapping("/new_category")
-    public String saveNewCategory(Category newCategory) {
-        categoryService.saveCategory(newCategory);
+    @PostMapping("/category/new")
+    public String saveNewCategory(CategoryDTO categoryDTO) {
+        categoryService.saveCategory(categoryDTO);
         return "redirect:/admin";
     }
 

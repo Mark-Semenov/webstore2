@@ -3,83 +3,120 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-          crossorigin="anonymous"/>
-    <link th:href="@{/css/style.css}" rel="stylesheet"/>
     <title>Cart</title>
 </head>
 <body>
 <div th:insert="~{menu :: menu}"></div>
 
 
-<div class="wrapper">
+<div class="container-md">
 
-    <div class="top container">
+    <div class="container-md">
+        <h2 class="text-capitalize sub-heading">Cart</h2>
+        <div class="row">
 
-        <div class="cart-heading">
-            <h3 th:if="${!cart.isEmpty()}">Cart</h3>
-            <h3 th:if="${cart.isEmpty()}">Cart is empty</h3>
-        </div>
+            <div class="col-md-12">
+                <!-- Form Start -->
+                <form action="#">
+                    <!-- Table Content Start -->
+                    <div class="table-content table-responsive mb-50"
+                         th:each="product : ${cart}">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th class="product-thumbnail">Image</th>
+                                <th class="product-name">Product</th>
+                                <th class="product-price">Price</th>
+                                <th class="product-quantity">Quantity</th>
+                                <th class="product-subtotal">Total</th>
+                                <th class="product-remove">Remove</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td class="product-thumbnail">
+                                    <a href="#">
+                                        <img th:src="@{'/images/'+ ${product.image}}"
+                                             th:alt="${product.name}">
+                                    </a>
+                                </td>
+                                <td class="product-name" th:text="${product.getName()}">
+                                    <a href="#"></a>
+                                </td>
+                                <td class="product-price">
+                                    <span class="amount" th:text="${product.price}"></span>
+                                </td>
+                                <td class="product-quantity">
+                                    <a class="count-plus-minus"
+                                       th:href="@{'/cart/remove?id=' + ${product.getId()}}">-</a>
+                                    <input th:placeholder="${@cartService.getCountOfProduct(product)}"
+                                           type="text" value="1">
+                                    <a class="count-plus-minus" th:href="@{'/cart/add?id=' + ${product.getId()}}">+</a>
+                                </td>
+                                <td class="product-subtotal" th:text="${totalSum}"></td>
+                                <td class="product-remove">
+                                    <a th:href="@{'/cart/delete?id=' + ${product.getId()}}">
+                                        <i class="fa fa-times" aria-hidden="true"></i>
+                                    </a>
+                                </td>
+                            </tr>
 
-        <div class="cart-body">
-            <div class="cart-left-side">
-                <div class="card" th:each="product : ${cart}">
-                    <div class="card-header">
-                        <h6 th:text="${product.getName()}"/>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="card-body cart">
-                        <div class="prod-img">
-                            <img th:src="@{'/images/'+ ${product.getImage()}}" class="card-img-top cart-prod-image"
-                                 th:alt="${product.getName()}">
+                    <!-- Table Content Start -->
+                    <div class="row">
+                        <!-- Cart Button Start -->
+                        <div class="col-lg-8 col-md-7">
+                            <div class="buttons-cart">
+                                <input type="submit" value="Update Cart">
+                                <a href="#">Continue Shopping</a>
+                            </div>
                         </div>
-                        <div class="product-description">
-                            <p class="card-text" th:text="${product.getDescription()}"/>
+                        <!-- Cart Button Start -->
+                        <!-- Cart Totals Start -->
+                        <div class="col-lg-4 col-md-12">
+                            <div class="cart_totals">
+                                <h2>Cart Totals</h2>
+                                <br>
+                                <table>
+                                    <tbody>
+                                    <tr class="cart-subtotal">
+                                        <th>Subtotal</th>
+                                        <td>
+                                            <span class="amount" th:text="${totalDiscount}"></span>
+                                        </td>
+                                    </tr>
+                                    <tr class="order-total">
+                                        <th>Total</th>
+                                        <td>
+                                            <strong>
+                                                <span th:text="${totalSum}" class="amount"></span>
+                                            </strong>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                <div class="wc-proceed-to-checkout">
+                                    <a th:href="@{'/cart/order'}">Checkout</a>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <p th:text="${product.getPrice()} + ' $'"/>
-                            <p th:if="${product.getOldPrice() != null}" th:text="${product.getOldPrice()} + ' $'"
-                               style="text-decoration: line-through"/>
-                            <p th:text="${@baseUserCart.getProductDiscount(product)}"/>
-                        </div>
-                        <div class="product-count">
-                            <a class="count-plus-minus" th:href="@{'/cart/remove?id=' + ${product.getId()}}">-</a>
-                            <input class="input-group input-prod-count" type="text"
-                                   th:placeholder="${@cartService.getOneProdCount(product)}">
-                            <a class="count-plus-minus" th:href="@{'/cart/add?id=' + ${product.getId()}}">+</a>
-                        </div>
+                        <!-- Cart Totals End -->
                     </div>
-                    <div class="card-body">
-                        <a class="card-link" th:href="@{'/product?id=' + ${product.getId()}}" th:text="'More'"/>
-                        <a class="card-link" th:href="@{'/cart/delete?id=' + ${product.getId()}}" th:text="'Delete'"/>
-                    </div>
-                </div>
+                    <!-- Row End -->
+                </form>
+                <!-- Form End -->
             </div>
-
-            <div th:if="${!cart.isEmpty()}" class="cart-right-side">
-                <div>
-                    <h3>Cart</h3>
-                    <p th:text="'Count of goods: ' + ${totalCount}"/>
-                    <p th:text="'Discount: ' + ${totalDiscount} + ' $'"/>
-                </div>
-                <div>
-                    <h3>Total sum</h3>
-                    <p th:text="${totalSum} + ' $'"/>
-                </div>
-                <div>
-                    <a th:href="@{'/cart/order'}" class="btn btn-primary">Checkout</a>
-                </div>
-            </div>
         </div>
+        <!-- Row End -->
+
 
     </div>
 
-    <div th:insert="~{footer::footer}"></div>
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4"
-        crossorigin="anonymous"></script>
+<div th:insert="~{footer::footer}"></div>
 </body>
 </html>

@@ -7,6 +7,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
+import ru.gb.mark.webstore.dto.AppRoles;
 
 @EnableWebSecurity
 @Component
@@ -18,8 +19,8 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests()
-                .requestMatchers("/user/**").hasRole("USER")
-                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .requestMatchers("/user/**").hasRole(AppRoles.USER.name())
+                .requestMatchers("/admin/**").hasRole(AppRoles.ADMIN.name())
                 .anyRequest()
                 .permitAll()
                 .and()

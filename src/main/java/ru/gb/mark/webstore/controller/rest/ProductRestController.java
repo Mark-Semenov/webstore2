@@ -31,7 +31,7 @@ public class ProductRestController {
         return ResponseEntity
                 .created(URI.create("/api/v1/products"))
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(productService.getAllProducts());
+                .body(productService.getAllProductsConvertedToDto());
     }
 
 

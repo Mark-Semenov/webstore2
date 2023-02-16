@@ -2,6 +2,7 @@ package ru.gb.mark.webstore.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import ru.gb.mark.webstore.dto.OrderStatus;
 
 import java.math.BigDecimal;
 

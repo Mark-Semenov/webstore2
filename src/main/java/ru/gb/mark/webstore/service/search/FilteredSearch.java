@@ -10,7 +10,7 @@ import ru.gb.mark.webstore.entity.Category;
 import ru.gb.mark.webstore.entity.Product;
 
 import java.util.Map;
-//Strategy pattern
+
 @Log4j2
 @Data
 public class FilteredSearch implements SearchStrategy {
@@ -32,7 +32,7 @@ public class FilteredSearch implements SearchStrategy {
                 }
                 case "category" -> {
                     param = map.get("category")[0];
-                    Category c = parameters.categoryRepository().findCategoryByName(param);
+                    Category c = parameters.categoryService().getCategoryByName(param);
                     return parameters.repository().findByCategory(c, Pageable.ofSize(5));
                 }
                 case "page" -> {

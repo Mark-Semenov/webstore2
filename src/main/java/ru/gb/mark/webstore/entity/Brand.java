@@ -15,11 +15,11 @@ public class Brand {
     private Long id;
     private String title;
 
-    @OneToMany (cascade = CascadeType.REMOVE)
+    @OneToMany
     @JoinTable(
             name = "brands_products",
             joinColumns = @JoinColumn(name = "brand_id"),
-            inverseJoinColumns = @JoinColumn(name = "products_id")
+            inverseJoinColumns = @JoinColumn(name = "product_id")
     )
     private List<Product> products;
 
