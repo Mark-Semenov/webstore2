@@ -7,7 +7,7 @@ import ru.gb.mark.webstore.entity.Category;
 
 @Log4j2
 @Data
-@Component //Data Mapper
+@Component
 public class CategoryDataMapper implements EntityMapper<Category, CategoryDTO> {
 
     @Override

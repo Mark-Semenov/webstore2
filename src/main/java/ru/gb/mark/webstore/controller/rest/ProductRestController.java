@@ -1,35 +1,34 @@
 package ru.gb.mark.webstore.controller.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.Data;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-import ru.gb.mark.webstore.entity.Product;
+import org.springframework.web.bind.annotation.*;
 import ru.gb.mark.webstore.service.ProductService;
 
 import java.net.URI;
-import java.util.Optional;
 
 @Data
 @RestController()
-@RequestMapping("/api/v1/")
+@RequestMapping("/api/v1/products/")
 public class ProductRestController {
 
     private final ProductService productService;
 
-    @GetMapping("/prod")
-    public Optional<Product> getProduct(@RequestParam(name = "id") Long id) {
-        return productService.findProductById(id);
+    @GetMapping("/product/get")
+    public ResponseEntity<?> getProduct(@RequestParam(name = "id") Long id, HttpServletRequest request) {
+        return ResponseEntity
+                .created(URI.create(request.getRequestURI()))
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(productService.getEntityMapper().mapEntityToDto(
+                        productService.findProductById(id).orElse(null)));
     }
 
-    @GetMapping("/products")
+    @GetMapping("/")
     public ResponseEntity<?> products() {
-
         return ResponseEntity
-                .created(URI.create("/api/v1/products"))
+                .created(URI.create("/"))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(productService.getAllProductsConvertedToDto());
     }
