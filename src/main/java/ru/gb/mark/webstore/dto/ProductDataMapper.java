@@ -7,7 +7,7 @@ import ru.gb.mark.webstore.entity.Product;
 
 @Log4j2
 @Data
-@Component //Data Mapper
+@Component
 public class ProductDataMapper implements EntityMapper<Product, ProductDTO> {
 
     @Override

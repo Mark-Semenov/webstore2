@@ -8,7 +8,7 @@ import ru.gb.mark.webstore.entity.Order;
 
 @Log4j2
 @Data
-@Component //Data Mapper
+@Component
 public class OrderDataMapper implements EntityMapper<Order, OrderDTO> {
 
     @Override

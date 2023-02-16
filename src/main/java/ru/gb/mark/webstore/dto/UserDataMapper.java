@@ -8,7 +8,7 @@ import ru.gb.mark.webstore.entity.User;
 
 @Log4j2
 @Data
-@Component //Data Mapper
+@Component
 public class UserDataMapper implements EntityMapper<User, UserDTO> {
 
     @Override
