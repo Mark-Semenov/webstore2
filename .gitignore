@@ -32,17 +32,16 @@ log/
 .gradle/
 *.gitignore
 gradlew
-src/main/resources/static/images/
 settings.gradle
-/src/main/resources/gradle.properties
 .DS_store
-/src/main/resources/app.properties
 
 #Temporary
-ServiceRegistry/
-product/
 auth-service/
+product/
 
 /src/main/resources/static/webfonts
 *.js
 *.css
+*.jpg
+*.jpeg
+*.png

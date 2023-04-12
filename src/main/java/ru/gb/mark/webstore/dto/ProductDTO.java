@@ -26,4 +26,6 @@ public class ProductDTO {
     private MultipartFile file;
     private Category category;
     private Brand brand;
+
+
 }
